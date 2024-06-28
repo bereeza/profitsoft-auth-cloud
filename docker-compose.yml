@@ -2,19 +2,74 @@ version: "3.9"
 
 services:
   consul:
+    image: bitnami/consul
     container_name: "consul"
-
-  rabbitmq:
-    container_name: "rabbitmq"
-
-  profit-soft-song-service-backend:
-    container_name: "java-backend"
+    ports:
+      - "8500:8500"
+    command: "consul agent -dev -ui -client=0.0.0.0"
+    networks:
+      - profitsoft
 
   postgres:
+    image: postgres:13
     container_name: "postgres"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: g8292gwjo
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - profitsoft
 
-  elasticsearch:
-    container_name: "elasticsearch"
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: "gateway"
+    depends_on:
+      - consul
+      - postgres
+    environment:
+      SERVER_PORT: 1000
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      SPRING_R2DBC_URL: "r2dbc:h2:mem:///gwsdb"
+      SPRING_SQL_INIT_MODE: always
+      SPRING_SQL_SCHEMA_LOCATIONS: classpath:schema.sql
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_CONSUL_PORT: 8500
+    ports:
+      - "1000:1000"
+    networks:
+      - profitsoft
 
-  profit-soft-song-service-frontend:
-    container_name: "js-frontend"
+  service-song:
+    build:
+      context: ./profitsoft-songservice-java-backend
+      dockerfile: Dockerfile
+    container_name: "service-song"
+    depends_on:
+      - gateway
+      - consul
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: g8292gwjo
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: "true"
+      SPRING_SQL_INIT_MODE: always
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_CONSUL_PORT: 8500
+    ports:
+      - "1001:1001"
+    networks:
+      - profitsoft
+
+networks:
+  profitsoft:
+    driver: bridge

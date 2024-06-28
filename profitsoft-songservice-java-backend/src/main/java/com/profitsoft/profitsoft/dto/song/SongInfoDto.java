@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class SongInfoDto {
+    private long id;
     private String title;
     private String album;
     private String genre;

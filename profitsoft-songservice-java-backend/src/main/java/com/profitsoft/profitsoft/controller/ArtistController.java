@@ -5,9 +5,6 @@ import com.profitsoft.profitsoft.dto.artist.ArtistSaveDto;
 import com.profitsoft.profitsoft.dto.artist.ArtistInfoDto;
 import com.profitsoft.profitsoft.exception.artist.ArtistNotFoundException;
 import com.profitsoft.profitsoft.service.artist.ArtistService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,10 +32,6 @@ public class ArtistController {
      * @return - list response with Artist data ( Artist entity is incomplete )
      */
     @GetMapping
-    @Operation(summary = "get all artists")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The artist is retrieved")
-    })
     public ResponseEntity<List<ArtistInfoDto>> getAllArtists() {
         return ResponseEntity
                 .ok(artistService.getAllArtists());
@@ -51,11 +44,6 @@ public class ArtistController {
      * @return - response with ArtistSaveDto data
      */
     @PostMapping
-    @Operation(summary = "add new artist")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The artist is added"),
-            @ApiResponse(responseCode = "400", description = "Bad request")
-    })
     public Response addArtist(@Valid @RequestBody ArtistSaveDto artist) {
         return new Response(artistService.save(artist));
     }
@@ -70,11 +58,6 @@ public class ArtistController {
      * @return - response with message
      */
     @PutMapping("/{id}")
-    @Operation(summary = "update artist by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Artist updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad request")
-    })
     public Response updateArtistById(@PathVariable long id, @Valid @RequestBody ArtistSaveDto artist) {
         artistService.updateArtistById(id, artist);
         return new Response("Artist updated successfully");
@@ -87,11 +70,6 @@ public class ArtistController {
      * @return - response with successful message or 404 Not found.
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "delete artist by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The artist is deleted"),
-            @ApiResponse(responseCode = "404", description = "Artist not found")
-    })
     public ResponseEntity<Response> deleteArtistById(@PathVariable long id) {
         try {
             artistService.deleteArtistById(id);

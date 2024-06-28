@@ -11,9 +11,6 @@ import com.profitsoft.profitsoft.exception.song.SongNotFoundException;
 import com.profitsoft.profitsoft.service.song.SongService;
 import com.profitsoft.profitsoft.util.CSVManager;
 import com.profitsoft.profitsoft.util.JSONParser;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,11 +43,6 @@ public class SongController {
      * @return - response with SongDetailInfoDto data
      */
     @PostMapping
-    @Operation(summary = "add new song")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The song is added"),
-            @ApiResponse(responseCode = "400", description = "Bad request")
-    })
     public ResponseEntity<SongDetailInfoDto> addSong(@Valid @RequestBody SongSaveDto songSaveDto) {
         return ResponseEntity
                 .ok(songService.save(songSaveDto));
@@ -63,11 +55,6 @@ public class SongController {
      * @return - response with SongDetailInfoDto data
      */
     @GetMapping("/{id}")
-    @Operation(summary = "get song by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The song is retrieved"),
-            @ApiResponse(responseCode = "404", description = "Song not found")
-    })
     public ResponseEntity<Optional<SongDetailInfoDto>> getSongById(@PathVariable long id) {
         return ResponseEntity
                 .ok(songService.getSongById(id));
@@ -83,11 +70,6 @@ public class SongController {
      * @return - response with SongDetailInfoDto data
      */
     @PutMapping("/{id}")
-    @Operation(summary = "update song by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Song updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad request")
-    })
     public ResponseEntity<SongDetailInfoDto> updateSongById(
             @PathVariable long id, @Valid @RequestBody SongSaveDto song) {
         return ResponseEntity
@@ -101,11 +83,6 @@ public class SongController {
      * @return - response with successful message or 404 Not found.
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "delete song by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The song is deleted"),
-            @ApiResponse(responseCode = "404", description = "Song not found")
-    })
     public ResponseEntity<Response> deleteSongById(@PathVariable long id) {
         try {
             songService.deleteSongById(id);
@@ -122,8 +99,6 @@ public class SongController {
      * @return - result entity with data & total_page (counter)
      */
     @PostMapping("_list")
-    @Operation(summary = "get a list of songs")
-    @ApiResponse(responseCode = "200", description = "List of songs filtered by criteria")
     public Result<SongInfoDto> getAllSongs(@RequestBody SongQueryDto query) {
         Page<SongInfoDto> songPage = songService.getSongsByCriteria(query);
         return new Result<>(songPage.getContent(), songPage.getTotalPages());
@@ -136,8 +111,6 @@ public class SongController {
      * @param response - response from HttpServletResponse (header, type, etc.)
      */
     @PostMapping("_report")
-    @Operation(summary = "get report list of songs")
-    @ApiResponse(responseCode = "200", description = "Report list of songs retrieved")
     public void getAllSongsReport(@RequestBody SongQueryDto query, HttpServletResponse response) {
         query.setSize(Integer.MAX_VALUE);
         query.setStartPage(0);
@@ -154,8 +127,6 @@ public class SongController {
      * @return - response with result ( Successfully & Failed)
      */
     @PostMapping("/upload")
-    @Operation(summary = "upload .json data file")
-    @ApiResponse(responseCode = "200", description = "Json file of songs uploaded")
     public Response uploadSong(@RequestParam("file") MultipartFile file) {
         UploadedResult<SongSaveDto> result = JSONParser.upload(file);
         songService.saveAllSongs(result.getData());

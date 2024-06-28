@@ -117,6 +117,7 @@ public class SongService {
 
     private SongInfoDto getBuilt(Song song) {
         return SongInfoDto.builder()
+                .id(song.getId())
                 .title(song.getTitle())
                 .album(song.getAlbum())
                 .genre(song.getGenre())

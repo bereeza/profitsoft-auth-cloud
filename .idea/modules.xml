@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/profitsoft-auth-cloud.iml" filepath="$PROJECT_DIR$/profitsoft-auth-cloud.iml" />
-      <module fileurl="file://$PROJECT_DIR$/profitsoft-react-frontend.iml" filepath="$PROJECT_DIR$/profitsoft-react-frontend.iml" />
     </modules>
   </component>
 </project>
